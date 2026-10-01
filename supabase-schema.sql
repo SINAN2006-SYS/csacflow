@@ -32,9 +32,18 @@ create table if not exists public.tasks (
 create table if not exists public.activity (
     id uuid primary key default gen_random_uuid(),
     user_id uuid references public.profiles(id) on delete set null,
+    team text not null default '',
     message text not null,
     created_at timestamptz not null default now()
 );
+
+alter table public.activity add column if not exists team text not null default '';
+
+update public.activity activity
+set team = profiles.team
+from public.profiles profiles
+where activity.user_id = profiles.id
+    and activity.team = '';
 
 create or replace function public.set_updated_at()
 returns trigger
@@ -80,40 +89,124 @@ alter table public.profiles enable row level security;
 alter table public.tasks enable row level security;
 alter table public.activity enable row level security;
 
+create or replace function public.current_user_role()
+returns text
+language sql
+stable
+security definer
+set search_path = public
+as $$
+    select role from public.profiles where id = auth.uid();
+$$;
+
+create or replace function public.current_user_team()
+returns text
+language sql
+stable
+security definer
+set search_path = public
+as $$
+    select team from public.profiles where id = auth.uid();
+$$;
+
 drop policy if exists "Authenticated users can read profiles" on public.profiles;
 create policy "Authenticated users can read profiles"
 on public.profiles for select
-to authenticated using (true);
+to authenticated using (
+    id = auth.uid()
+    or public.current_user_role() = 'Admin'
+    or (
+        public.current_user_role() = 'Head'
+        and team = public.current_user_team()
+    )
+);
 
 drop policy if exists "Users can read tasks" on public.tasks;
 create policy "Users can read tasks"
 on public.tasks for select
-to authenticated using (true);
+to authenticated using (
+    public.current_user_role() = 'Admin'
+    or (
+        public.current_user_role() = 'Head'
+        and team = public.current_user_team()
+    )
+    or (
+        public.current_user_role() = 'Member'
+        and assignee_id = auth.uid()
+    )
+);
 
 drop policy if exists "Users can create tasks" on public.tasks;
 create policy "Users can create tasks"
 on public.tasks for insert
-to authenticated with check (auth.uid() = created_by);
+to authenticated with check (
+    auth.uid() = created_by
+    and (
+        public.current_user_role() = 'Admin'
+        or (
+            public.current_user_role() = 'Head'
+            and team = public.current_user_team()
+        )
+    )
+);
 
 drop policy if exists "Users can update tasks" on public.tasks;
 create policy "Users can update tasks"
 on public.tasks for update
-to authenticated using (true) with check (true);
+to authenticated
+using (
+    public.current_user_role() = 'Admin'
+    or (
+        public.current_user_role() = 'Head'
+        and team = public.current_user_team()
+    )
+    or (
+        public.current_user_role() = 'Member'
+        and assignee_id = auth.uid()
+    )
+)
+with check (
+    public.current_user_role() = 'Admin'
+    or (
+        public.current_user_role() = 'Head'
+        and team = public.current_user_team()
+    )
+    or (
+        public.current_user_role() = 'Member'
+        and assignee_id = auth.uid()
+    )
+);
 
 drop policy if exists "Users can delete tasks" on public.tasks;
 create policy "Users can delete tasks"
 on public.tasks for delete
-to authenticated using (true);
+to authenticated using (
+    public.current_user_role() = 'Admin'
+    or (
+        public.current_user_role() = 'Head'
+        and team = public.current_user_team()
+    )
+);
 
 drop policy if exists "Authenticated users can read activity" on public.activity;
 create policy "Authenticated users can read activity"
 on public.activity for select
-to authenticated using (true);
+to authenticated using (
+    public.current_user_role() = 'Admin'
+    or user_id = auth.uid()
+    or (
+        public.current_user_role() = 'Head'
+        and team = public.current_user_team()
+    )
+);
 
 drop policy if exists "Authenticated users can create activity" on public.activity;
 create policy "Authenticated users can create activity"
 on public.activity for insert
-to authenticated with check (auth.uid() = user_id or user_id is null);
+to authenticated with check (
+    auth.uid() = user_id
+    and team = public.current_user_team()
+);
 
 -- After creating Auth users, update their profiles with your real team details.
 -- Example:

@@ -2443,7 +2443,8 @@ async function addActivity(message) {
             .from("activity")
             .insert({
                 message,
-                user_id: currentUser?.id || null
+                user_id: currentUser?.id || null,
+                team: currentUser?.team || ""
             })
             .select()
             .single();
