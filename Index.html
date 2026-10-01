@@ -1,0 +1,890 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>CSAC Task Management System</title>
+
+    <meta
+        name="description"
+        content="CSAC Task Management and Team Coordination System"
+    >
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<!-- =========================================================
+     LOGIN SCREEN
+========================================================= -->
+
+<div id="loginScreen" class="login-screen">
+
+    <div class="login-card">
+
+        <div class="login-logo">
+            <img
+                src="Logo/CSC Black.png"
+                alt="CSAC Logo"
+                onerror="this.style.display='none';"
+            >
+        </div>
+
+        <div class="login-title">
+            <h1>CSAC</h1>
+            <p>Task Management System</p>
+        </div>
+
+        <form id="loginForm">
+
+            <div class="form-group">
+                    <label for="loginId">Email</label>
+
+                <input
+                    type="text"
+                    id="loginId"
+                    placeholder="Enter your email"
+                    autocomplete="username"
+                    required
+                >
+            </div>
+
+            <div class="form-group">
+
+                <label for="loginPassword">
+                    Password
+                </label>
+
+                <div class="password-wrapper">
+
+                    <input
+                        type="password"
+                        id="loginPassword"
+                        placeholder="Enter your password"
+                        autocomplete="current-password"
+                        required
+                    >
+
+                    <button
+                        type="button"
+                        id="togglePassword"
+                        class="password-toggle"
+                        aria-label="Show password"
+                    >
+                        👁
+                    </button>
+
+                </div>
+
+            </div>
+
+            <button
+                type="submit"
+                class="btn btn-primary login-btn"
+            >
+                Login
+            </button>
+
+            <p id="loginError" class="login-error"></p>
+
+        </form>
+
+    </div>
+
+</div>
+
+
+<!-- =========================================================
+     APPLICATION
+========================================================= -->
+
+<div id="app" class="app hidden">
+
+    <!-- SIDEBAR -->
+
+    <aside class="sidebar">
+
+        <div class="sidebar-brand">
+
+            <img
+                src="Logo/CSC Black.png"
+                alt="CSAC Logo"
+                class="sidebar-logo"
+                onerror="this.style.display='none';"
+            >
+
+            <div>
+                <strong>CSAC</strong>
+                <span>Task Manager</span>
+            </div>
+
+        </div>
+
+
+        <nav class="sidebar-nav">
+
+            <button
+                class="nav-item active"
+                data-section="dashboard"
+            >
+                <span>▦</span>
+                Dashboard
+            </button>
+
+            <button
+                class="nav-item"
+                data-section="tasks"
+            >
+                <span>✓</span>
+                Tasks
+            </button>
+
+            <button
+                class="nav-item"
+                data-section="members"
+            >
+                <span>♙</span>
+                Members
+            </button>
+
+            <button
+                class="nav-item"
+                data-section="activity"
+            >
+                <span>◷</span>
+                Activity
+            </button>
+
+        </nav>
+
+
+        <div class="sidebar-bottom">
+
+            <div class="current-user-mini">
+
+                <div
+                    id="sidebarAvatar"
+                    class="avatar"
+                >
+                    U
+                </div>
+
+                <div class="current-user-info">
+
+                    <strong id="sidebarName">
+                        User
+                    </strong>
+
+                    <span id="sidebarRole">
+                        Member
+                    </span>
+
+                </div>
+
+            </div>
+
+            <button
+                id="logoutBtn"
+                class="logout-btn"
+            >
+                Logout
+            </button>
+
+        </div>
+
+    </aside>
+
+
+    <!-- MAIN -->
+
+    <main class="main-content">
+
+        <!-- TOPBAR -->
+
+        <header class="topbar">
+
+            <div class="mobile-brand">
+
+                <img
+                    src="Logo/CSC Black.png"
+                    alt="CSAC"
+                    onerror="this.style.display='none';"
+                >
+
+                <strong>CSAC</strong>
+
+            </div>
+
+            <div class="topbar-title">
+
+                <h2 id="pageTitle">
+                    Dashboard
+                </h2>
+
+                <p id="pageSubtitle">
+                    Manage your team's work efficiently.
+                </p>
+
+            </div>
+
+
+            <div class="topbar-actions">
+
+                <button
+                    id="openAddTaskBtn"
+                    class="btn btn-primary"
+                >
+                    + Add Task
+                </button>
+
+            </div>
+
+        </header>
+
+
+        <!-- =================================================
+             DASHBOARD
+        ================================================== -->
+
+        <section
+            id="dashboardSection"
+            class="page-section active-section"
+        >
+
+            <div class="welcome-card">
+
+                <div>
+
+                    <span class="eyebrow">
+                        CSAC WORKSPACE
+                    </span>
+
+                    <h1>
+                        Welcome,
+                        <span id="welcomeName">
+                            User
+                        </span>
+                    </h1>
+
+                    <p id="welcomeDescription">
+                        Here's your current team overview.
+                    </p>
+
+                </div>
+
+                <div class="welcome-date">
+                    <span id="currentDate"></span>
+                </div>
+
+            </div>
+
+
+            <!-- STATISTICS -->
+
+            <div class="stats-grid">
+
+                <div class="stat-card">
+
+                    <div class="stat-icon blue">
+                        ✓
+                    </div>
+
+                    <div>
+
+                        <span>Total Tasks</span>
+
+                        <strong id="statTotal">
+                            0
+                        </strong>
+
+                    </div>
+
+                </div>
+
+
+                <div class="stat-card">
+
+                    <div class="stat-icon orange">
+                        ◷
+                    </div>
+
+                    <div>
+
+                        <span>Pending</span>
+
+                        <strong id="statPending">
+                            0
+                        </strong>
+
+                    </div>
+
+                </div>
+
+
+                <div class="stat-card">
+
+                    <div class="stat-icon purple">
+                        ↗
+                    </div>
+
+                    <div>
+
+                        <span>In Progress</span>
+
+                        <strong id="statProgress">
+                            0
+                        </strong>
+
+                    </div>
+
+                </div>
+
+
+                <div class="stat-card">
+
+                    <div class="stat-icon green">
+                        ✓
+                    </div>
+
+                    <div>
+
+                        <span>Completed</span>
+
+                        <strong id="statCompleted">
+                            0
+                        </strong>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- PROGRESS -->
+
+            <div class="dashboard-grid">
+
+                <div class="panel">
+
+                    <div class="panel-header">
+
+                        <div>
+                            <h3>Team Progress</h3>
+                            <p>Current task completion</p>
+                        </div>
+
+                        <span
+                            id="overallProgressText"
+                            class="percentage"
+                        >
+                            0%
+                        </span>
+
+                    </div>
+
+                    <div class="large-progress">
+
+                        <div
+                            id="overallProgressBar"
+                            class="large-progress-fill"
+                            style="width:0%"
+                        ></div>
+
+                    </div>
+
+                </div>
+
+
+                <div class="panel">
+
+                    <div class="panel-header">
+
+                        <div>
+                            <h3>My Work</h3>
+                            <p>Your assigned tasks</p>
+                        </div>
+
+                    </div>
+
+                    <div id="myWorkSummary"></div>
+
+                </div>
+
+            </div>
+
+
+            <!-- RECENT TASKS -->
+
+            <div class="panel">
+
+                <div class="panel-header">
+
+                    <div>
+                        <h3>Recent Tasks</h3>
+                        <p>Latest activity in your workspace</p>
+                    </div>
+
+                    <button
+                        class="text-btn"
+                        data-section-link="tasks"
+                    >
+                        View all
+                    </button>
+
+                </div>
+
+                <div
+                    id="recentTasks"
+                    class="task-list"
+                ></div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =================================================
+             TASKS
+        ================================================== -->
+
+        <section
+            id="tasksSection"
+            class="page-section"
+        >
+
+            <div class="section-toolbar">
+
+                <div class="search-box">
+
+                    <span>⌕</span>
+
+                    <input
+                        type="search"
+                        id="taskSearch"
+                        placeholder="Search tasks..."
+                    >
+
+                </div>
+
+
+                <div class="filter-group">
+
+                    <select id="teamFilter">
+                        <option value="all">
+                            All Teams
+                        </option>
+                    </select>
+
+                    <select id="statusFilter">
+
+                        <option value="all">
+                            All Status
+                        </option>
+
+                        <option value="pending">
+                            Pending
+                        </option>
+
+                        <option value="in-progress">
+                            In Progress
+                        </option>
+
+                        <option value="completed">
+                            Completed
+                        </option>
+
+                    </select>
+
+                    <select id="priorityFilter">
+
+                        <option value="all">
+                            All Priority
+                        </option>
+
+                        <option value="high">
+                            High
+                        </option>
+
+                        <option value="medium">
+                            Medium
+                        </option>
+
+                        <option value="low">
+                            Low
+                        </option>
+
+                    </select>
+
+                </div>
+
+            </div>
+
+
+            <div
+                id="taskBoard"
+                class="task-board"
+            ></div>
+
+        </section>
+
+
+        <!-- =================================================
+             MEMBERS
+        ================================================== -->
+
+        <section
+            id="membersSection"
+            class="page-section"
+        >
+
+            <div class="section-intro">
+
+                <div>
+
+                    <span class="eyebrow">
+                        TEAM DIRECTORY
+                    </span>
+
+                    <h2>Members</h2>
+
+                    <p>
+                        View people you are allowed to access.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div
+                id="membersGrid"
+                class="members-grid"
+            ></div>
+
+        </section>
+
+
+        <!-- =================================================
+             ACTIVITY
+        ================================================== -->
+
+        <section
+            id="activitySection"
+            class="page-section"
+        >
+
+            <div class="section-intro">
+
+                <div>
+
+                    <span class="eyebrow">
+                        AUDIT TRAIL
+                    </span>
+
+                    <h2>Activity</h2>
+
+                    <p>
+                        Recent actions in the workspace.
+                    </p>
+
+                </div>
+
+            </div>
+
+            <div
+                id="activityList"
+                class="activity-list"
+            ></div>
+
+        </section>
+
+    </main>
+
+</div>
+
+
+<!-- =========================================================
+     ADD / EDIT TASK MODAL
+========================================================= -->
+
+<div
+    id="taskModal"
+    class="modal-overlay hidden"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="taskModalTitle"
+>
+
+    <div class="modal-card">
+
+        <div class="modal-header">
+
+            <div>
+
+                <span class="eyebrow">
+                    TASK MANAGEMENT
+                </span>
+
+                <h2 id="taskModalTitle">
+                    Add New Task
+                </h2>
+
+            </div>
+
+            <button
+                id="closeModalBtn"
+                class="modal-close"
+                type="button"
+                aria-label="Close"
+            >
+                ×
+            </button>
+
+        </div>
+
+
+        <form id="taskForm">
+
+            <input
+                type="hidden"
+                id="editingTaskId"
+            >
+
+
+            <div class="form-group">
+
+                <label for="taskTitle">
+                    Task Title *
+                </label>
+
+                <input
+                    type="text"
+                    id="taskTitle"
+                    placeholder="e.g. Design Hestia poster"
+                    maxlength="100"
+                    required
+                >
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label for="taskDescription">
+                    Description
+                </label>
+
+                <textarea
+                    id="taskDescription"
+                    rows="4"
+                    placeholder="Describe the work..."
+                    maxlength="500"
+                ></textarea>
+
+            </div>
+
+
+            <div class="form-row">
+
+                <div class="form-group">
+
+                    <label for="taskAssignee">
+                        Assign To *
+                    </label>
+
+                    <select
+                        id="taskAssignee"
+                        required
+                    ></select>
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="taskTeam">
+                        Team
+                    </label>
+
+                    <input
+                        type="text"
+                        id="taskTeam"
+                        readonly
+                    >
+
+                </div>
+
+            </div>
+
+
+            <div class="form-row">
+
+                <div class="form-group">
+
+                    <label for="taskPriority">
+                        Priority
+                    </label>
+
+                    <select id="taskPriority">
+
+                        <option value="low">
+                            Low
+                        </option>
+
+                        <option value="medium" selected>
+                            Medium
+                        </option>
+
+                        <option value="high">
+                            High
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="taskDueDate">
+                        Due Date
+                    </label>
+
+                    <input
+                        type="date"
+                        id="taskDueDate"
+                    >
+
+                </div>
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label for="taskProgress">
+                    Progress
+                </label>
+
+                <div class="range-wrapper">
+
+                    <input
+                        type="range"
+                        id="taskProgress"
+                        min="0"
+                        max="100"
+                        value="0"
+                    >
+
+                    <strong id="progressValue">
+                        0%
+                    </strong>
+
+                </div>
+
+            </div>
+
+
+            <!-- IMPORTANT: BUTTONS HAVE THEIR OWN ROW -->
+
+            <div class="modal-actions">
+
+                <button
+                    type="button"
+                    id="cancelTaskBtn"
+                    class="btn btn-secondary"
+                >
+                    Cancel
+                </button>
+
+                <button
+                    type="submit"
+                    id="saveTaskBtn"
+                    class="btn btn-primary"
+                >
+                    Add Task
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+
+<!-- =========================================================
+     DELETE CONFIRMATION
+========================================================= -->
+
+<div
+    id="deleteModal"
+    class="modal-overlay hidden"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="deleteTitle"
+>
+
+    <div class="confirm-card">
+
+        <div class="danger-icon">
+            !
+        </div>
+
+        <h2 id="deleteTitle">
+            Delete Task?
+        </h2>
+
+        <p>
+            This action cannot be undone.
+        </p>
+
+        <div class="confirm-actions">
+
+            <button
+                type="button"
+                id="cancelDeleteBtn"
+                class="btn btn-secondary"
+            >
+                Cancel
+            </button>
+
+            <button
+                type="button"
+                id="confirmDeleteBtn"
+                class="btn btn-danger"
+            >
+                Delete Task
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- =========================================================
+     TOAST
+========================================================= -->
+
+<div
+    id="toast"
+    class="toast"
+    role="status"
+    aria-live="polite"
+>
+    <span id="toastMessage"></span>
+</div>
+
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="supabase-config.js"></script>
+<script src="script.js"></script>
+
+</body>
+</html>

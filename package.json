@@ -1,0 +1,7 @@
+{
+  "name": "csac-task-management",
+  "private": true,
+  "scripts": {
+    "build": "node build-config.js"
+  }
+}

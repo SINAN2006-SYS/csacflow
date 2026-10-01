@@ -1,0 +1,4 @@
+.env
+supabase-config.js
+node_modules/
+.vercel/
